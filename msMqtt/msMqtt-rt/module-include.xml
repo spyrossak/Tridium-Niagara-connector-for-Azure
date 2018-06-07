@@ -1,0 +1,10 @@
+<!-- Module Include File -->
+<!-- Types -->
+<types>
+  <!--com.microsoft.workflow.mqtt-->
+  <type class="com.microsoft.workflow.mqtt.BAddMqttDriver" name="AddMqttDriver"/>
+  <type class="com.microsoft.workflow.mqtt.BBacnetToMqtt" name="BacnetToMqtt"/>
+  <type class="com.microsoft.workflow.mqtt.BBacnetMessageBuilder" name="BacnetMessageBuilder"/>
+  <type class="com.microsoft.workflow.mqtt.BChangeGatewayName" name="ChangeGatewayName"/>
+  <type class="com.microsoft.workflow.mqtt.BBacnetToMqttJob" name="BacnetToMqttJob"/>
+</types>

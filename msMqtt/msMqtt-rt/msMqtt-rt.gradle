@@ -1,0 +1,46 @@
+description     = "Workflow utility to publish data trees in the native Naigara MQTT driver."
+ext {
+  name            = "msMqtt"
+  project.group   = "Microsoft Mqtt Utility"
+  project.version = "1.0.1805101"
+}
+niagaraModule {
+  preferredSymbol = "msmqtt"
+  moduleName = "msMqtt"
+  runtimeProfile = "rt"
+}
+
+dependencies {
+  compile "Tridium:nre:4.2"
+  compile "Tridium:baja:4.2"
+  compile "Tridium:driver-rt:4.2"
+  compile "Tridium:alarm-rt:4.2"
+  compile "Tridium:bql-rt:4.2"
+  compile "Tridium:control-rt:4.2"
+  compile "Tridium:kitControl-rt:4.2"
+  compile "Tridium:abstractMqttDriver-rt:1.0"
+  compile "Tridium:bacnet-rt:4.2"
+  compile "Tridium:ndriver-rt:4.2"
+  compile "Tridium:converters-rt:4.2"
+}
+
+// Include additional files in jar
+
+jar
+        {
+          from("src")
+                  {
+                    //include "images/*.png"
+                    //include "images/x32/*.png"
+                    //include "rc/*.css";
+                    //include "rc/*.png";
+                  }
+        }
+
+// Include additinal files in test jar.
+moduleTestJar
+        {
+          from('srcTest')
+                  {
+                  }
+        }

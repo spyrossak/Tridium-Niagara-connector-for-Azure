@@ -1,0 +1,45 @@
+ext { 
+  niagaraHome = System.getenv("niagara_home") 
+  if (niagaraHome == null) { 
+    logger.error("niagara_home environment variable not set")
+  } 
+}
+
+//apply plugin: 'eclipse'
+apply plugin: 'java'
+
+
+//to enable idea/intellij or eclipse support, un-comment the lines below
+apply from: "${System.getenv("niagara_home")}/etc/gradle/idea.gradle"
+apply from: "${System.getenv("niagara_home")}/etc/gradle/niagara.gradle"
+//apply from: "${System.getenv("niagara_home")}/etc/gradle/eclipse.gradle"
+
+gradle.beforeProject { p -> 
+  configure(p) { 
+    def vendorSettings = file("${rootDir}/vendor.gradle") 
+    if (vendorSettings.exists()) { 
+      apply from: vendorSettings 
+    } 
+    apply from: "${System.getenv("niagara_home")}/etc/gradle/niagara.gradle"
+  } 
+}
+
+tasks.addRule(""" 
+Pattern: [jar[Test]|clean|<any gradle task>]/[path]: Run a Gradle task against a set of modules rooted at path. 
+""") { String taskName -> 
+  def matcher = taskName =~ /(.*?)(Test)?\/(.*)/ 
+  if (matcher) { 
+    def command = matcher.group(1) 
+    def includeTestModules = matcher.group(2) == "Test"
+    def path = file("${projectDir}/${matcher.group(3)}").toPath() 
+    assert path.toFile().exists() 
+    def targetProjects = subprojects.findAll { it.projectDir.toPath().startsWith(path) } 
+    // default is build command and build is an alias for Gradle"s jar task 
+    if (command.isEmpty() || command == "build") { command = "jar" }
+    // Create task for subproject 
+    task(taskName, dependsOn: targetProjects.tasks[command]) 
+    if (includeTestModules && command == "jar") { 
+      tasks[taskName].dependsOn targetProjects.moduleTestJar 
+    } 
+  } 
+}

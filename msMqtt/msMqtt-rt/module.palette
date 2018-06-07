@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bajaObjectGraph version="4.0" reversibleEncodingKeySource="none" reversibleEncodingValidator="[null.1]=" >
+<p m="b=baja" t="b:Folder">
+	<p m="m=msMqtt" t="m:BacnetToMqtt" n="BacnetToMqttUtil"/>
+</p>
+</bajaObjectGraph>

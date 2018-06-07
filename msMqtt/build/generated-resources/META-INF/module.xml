@@ -1,0 +1,2 @@
+<?xml version='1.0'?>
+<module name='niagara' bajaVersion='0' vendor='' vendorVersion='unspecified' description='' preferredSymbol='niagara' nre='true' installable='true' autoload='true' buildMillis='1519765788600' buildHost='001380-L' runtimeProfile='se'><dependencies><dependency name='baja' vendor='Tridium' vendorVersion='4.0'/></dependencies><dirs/><types></types></module>
