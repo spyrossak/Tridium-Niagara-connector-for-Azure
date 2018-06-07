@@ -1,4 +1,7 @@
-ext { 
+/*
+ * Copyright (c) 2014 Tridium Inc., All Rights Reserved
+ */
+ext {
   niagaraHome = System.getenv("niagara_home") 
   if (niagaraHome == null) { 
     logger.error("niagara_home environment variable not set")

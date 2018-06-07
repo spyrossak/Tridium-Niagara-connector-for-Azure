@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 description     = "Workflow utility to publish data trees in the native Naigara MQTT driver."
 ext {
   name            = "msMqtt"
