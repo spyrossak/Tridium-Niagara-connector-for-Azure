@@ -30,6 +30,18 @@ import javax.baja.sys.*;
         flags = Flags.SUMMARY
 )
 @NiagaraProperty(
+        name="datapointName",
+        defaultValue = "",
+        type = "String",
+        flags = Flags.SUMMARY
+)
+@NiagaraProperty(
+        name="tags",
+        defaultValue = "",
+        type = "String",
+        flags = Flags.SUMMARY
+)
+@NiagaraProperty(
         name="bacnetObjectIdentifier",
         defaultValue = "",
         type = "String",
@@ -39,7 +51,7 @@ import javax.baja.sys.*;
         name="presentValue",
         defaultValue = "",
         type = "String",
-        flags = Flags.SUMMARY
+        flags = Flags.SUMMARY | Flags.EXECUTE_ON_CHANGE
 )
 @NiagaraProperty(
         name="updateTime",
@@ -57,9 +69,10 @@ import javax.baja.sys.*;
 public class BBacnetMessageBuilder
 extends BComponent
 {
+
 /*+ ------------ BEGIN BAJA AUTO GENERATED CODE ------------ +*/
-/*@ $com.microsoft.workflow.mqtt.BBacnetMessageBuilder(626585737)1.0$ @*/
-/* Generated Fri Feb 23 12:25:48 PST 2018 by Slot-o-Matic (c) Tridium, Inc. 2012 */
+/*@ $com.microsoft.workflow.mqtt.BBacnetMessageBuilder(2705204920)1.0$ @*/
+/* Generated Wed Oct 23 10:08:05 CEST 2019 by Slot-o-Matic (c) Tridium, Inc. 2012 */
 
 ////////////////////////////////////////////////////////////////
 // Property "out"
@@ -131,6 +144,52 @@ extends BComponent
   public void setDeviceName(String v) { setString(deviceName, v, null); }
 
 ////////////////////////////////////////////////////////////////
+// Property "datapointName"
+////////////////////////////////////////////////////////////////
+  
+  /**
+   * Slot for the {@code datapointName} property.
+   * @see #getDatapointName
+   * @see #setDatapointName
+   */
+  public static final Property datapointName = newProperty(Flags.SUMMARY, "", null);
+  
+  /**
+   * Get the {@code datapointName} property.
+   * @see #datapointName
+   */
+  public String getDatapointName() { return getString(datapointName); }
+  
+  /**
+   * Set the {@code datapointName} property.
+   * @see #datapointName
+   */
+  public void setDatapointName(String v) { setString(datapointName, v, null); }
+
+////////////////////////////////////////////////////////////////
+// Property "tags"
+////////////////////////////////////////////////////////////////
+  
+  /**
+   * Slot for the {@code tags} property.
+   * @see #getTags
+   * @see #setTags
+   */
+  public static final Property tags = newProperty(Flags.SUMMARY, "", null);
+  
+  /**
+   * Get the {@code tags} property.
+   * @see #tags
+   */
+  public String getTags() { return getString(tags); }
+  
+  /**
+   * Set the {@code tags} property.
+   * @see #tags
+   */
+  public void setTags(String v) { setString(tags, v, null); }
+
+////////////////////////////////////////////////////////////////
 // Property "bacnetObjectIdentifier"
 ////////////////////////////////////////////////////////////////
   
@@ -162,7 +221,7 @@ extends BComponent
    * @see #getPresentValue
    * @see #setPresentValue
    */
-  public static final Property presentValue = newProperty(Flags.SUMMARY, "", null);
+  public static final Property presentValue = newProperty(Flags.SUMMARY | Flags.EXECUTE_ON_CHANGE, "", null);
   
   /**
    * Get the {@code presentValue} property.
@@ -254,9 +313,12 @@ extends BComponent
       {
           initTimer();
       }
-      String message = getMessage(cx);
-      if(message != null)
-        setOut(message);
+      // Avoid change-event-recursion...
+      if (!p.equals(out)) {
+          String message = getMessage(cx);
+          if(message != null)
+              setOut(message);
+      }
     }
 
     private String getMessage(Context cx)
@@ -266,7 +328,7 @@ extends BComponent
       try {
         String[] oid = TextUtil.split(getBacnetObjectIdentifier(), ':');
         if (oid.length > 0)
-          result = "{\"GatewayName\":\"" + getGatewayName() + "\",\"Timestamp\":\"" + BAbsTime.now().encodeToString() + "\",\"Asset\":{\"DeviceName\":\"" + getDeviceName() + "\",\"ObjectType\":\"" + firstCharToUpper(oid[0]) + "\",\"Instance\":\"" + oid[1] + "\",\"PresentValue\":\"" + getPresentValue() + "\"}}";
+          result = "{\"GatewayName\":\"" + getGatewayName() + "\",\"Timestamp\":\"" + BAbsTime.now().encodeToString() + "\",\"Asset\":{\"DeviceName\":\"" + getDeviceName() + "\",\"ObjectType\":\"" + firstCharToUpper(oid[0]) + "\",\"Instance\":\"" + oid[1] + "\",\"DatapointName\":\"" + getDatapointName() + "\",\"PresentValue\":\"" + getPresentValue() + "\"," + getTags() + "}}";
       }catch(Exception ex){}
       return result;
     }
