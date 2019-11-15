@@ -17,6 +17,7 @@ import javax.baja.nre.annotations.NiagaraType;
 import javax.baja.nre.util.TextUtil;
 import javax.baja.security.BPassword;
 import javax.baja.security.BUsernameAndPassword;
+import javax.baja.security.crypto.BSslTlsEnum;
 import javax.baja.sys.*;
 
 @NiagaraType
@@ -279,13 +280,15 @@ extends BComponent
         String gateway = getGatewayName(parameters);
         // Set configuration settings to the Mqtt device.
         BUsernameAndPassword cred = new BUsernameAndPassword();
-        cred.setUsername(IotHubHostName + "/" + DeviceName);
+        cred.setUsername(IotHubHostName + "/" + DeviceName + "/?api-version=2018-06-30");
         cred.setPassword(BPassword.make(SharedAccessSignature));
         device.setClientID(DeviceName);
         device.setBrokerIpAddress(IotHubHostName);
         device.setBrokerPort(8883);
         device.setUsernameAndPassword(cred);
         device.setTopicForLWT(gateway);
+        device.setCleanSession(true);
+        device.setSslVersion(BSslTlsEnum.tlsv1_2);
 
         // Save Gateway Name
         setGatewayName(gateway);

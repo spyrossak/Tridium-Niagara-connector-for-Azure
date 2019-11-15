@@ -6,6 +6,9 @@ import com.tridiumx.mqttClientDriver.BAbstractMqttDriverDevice;
 import com.tridiumx.mqttClientDriver.BAbstractMqttDriverNetwork;
 import com.tridiumx.mqttClientDriver.point.BMqttClientDriverPointFolder;
 import com.tridiumx.mqttClientDriver.proxyExt.publishers.BMqttStringObjectPublishExt;
+import com.tridiumx.mqttClientDriver.proxyExt.subscribers.BMqttStringObjectSubscribeExt;
+
+import java.util.Arrays;
 
 import javax.baja.bacnet.BBacnetDevice;
 import javax.baja.bacnet.BBacnetNetwork;
@@ -18,6 +21,7 @@ import javax.baja.job.BSimpleJob;
 import javax.baja.naming.BOrd;
 import javax.baja.nre.annotations.NiagaraType;
 import javax.baja.sys.*;
+import javax.baja.tag.Tag;
 
 @NiagaraType()
 
@@ -65,8 +69,19 @@ public class BBacnetToMqttJob
         if(_mqttNetwork != null)
             _mqttDevice = (BAbstractMqttDriverDevice)_mqttNetwork.get(jobInitiater.getMqttNetworkDeviceName()).asComponent();
 
-        if(bacnetNetwork != null && _mqttDevice != null)
+        if(bacnetNetwork != null && _mqttDevice != null) {
             processBacnetNetwork(bacnetNetwork);
+            // Instantiate MQTT Subscribe Point for Cloud2Device messages...
+            BMqttStringObjectSubscribeExt mqttExt = new BMqttStringObjectSubscribeExt();
+            mqttExt.setTopic("devices/"+_mqttDevice.getClientID()+"/messages/devicebound/#");
+            BStringPoint mqttPoint = new BStringPoint();
+            mqttPoint.setProxyExt(mqttExt);
+            try {
+              _mqttDevice.getPoints().add("Cloud2Device", mqttPoint);
+            } catch (DuplicateSlotException e) {
+              System.out.println("Adding MQTT Subscribe Point failed. Slot \"Cloud2Device\" already exists, that's OK. Existing point is not overwritten.");
+            }
+        }
     }
 
 
@@ -141,7 +156,7 @@ public class BBacnetToMqttJob
                     BStringWritable mqttPoint = new BStringWritable();
                     BMqttStringObjectPublishExt mqttExt = new BMqttStringObjectPublishExt();
                     mqttPoint.setProxyExt(mqttExt);
-                    mqttExt.setTopic("devices/"+_mqttDevice.getClientID()+"/messages/events/");
+                    mqttExt.setTopic("devices/"+_mqttDevice.getClientID()+"/messages/events/%24.ct=application%2Fjson&%24.ce=utf-8");
                     mqttExt.setRetained(false);
                     //mqttExt.setPublishMessageOnChange(false);
 
@@ -152,6 +167,20 @@ public class BBacnetToMqttJob
                     // Set static builder Attributes/Default Values
                     builder.setGatewayName(jobInitiater.getGatewayName());
                     builder.setDeviceName(deviceName);
+                    builder.setDatapointName(p.getName());
+                    // Ignore tags about current status of datapoint, i. e. consider only static tags
+                    String[] ignoredTags = {"hs:curErr", "hs:curStatus", "hs:curVal", "hs:writeErr", "hs:writeLevel", "hs:writeStatus", "hs:writeVal"};
+                    StringBuilder tags = new StringBuilder("\"Tags\":{");
+                    String delimiter = "";
+                    for (Tag tag : p.tags()) {
+                        if (!Arrays.asList(ignoredTags).contains(tag.getId().getQName())) {
+                            tags.append(delimiter);
+                            delimiter = ",";
+                            tags.append("\"" + tag.getId().getQName() + "\":\"" + tag.getValue().encodeToString() + "\"");
+                        }
+                    }
+                    tags.append("}");
+                    builder.setTags(tags.toString());
 
                     // Link values from source component
                     builder.add(null, objectIdLink); // Links object ID to the builder which will parse and transform to IoT message.
