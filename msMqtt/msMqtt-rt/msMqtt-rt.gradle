@@ -5,7 +5,7 @@ description     = "Workflow utility to publish data trees in the native Naigara 
 ext {
   name            = "msMqtt"
   project.group   = "Microsoft Mqtt Utility"
-  project.version = "1.0.1910231"
+  project.version = "1.0.1911151"
 }
 niagaraModule {
   preferredSymbol = "msmqtt"

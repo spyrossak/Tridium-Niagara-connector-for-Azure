@@ -4,7 +4,6 @@ package com.microsoft.workflow.mqtt;
 
 import com.tridiumx.mqttClientDriver.BAbstractMqttDriverDevice;
 import com.tridiumx.mqttClientDriver.BAbstractMqttDriverNetwork;
-import com.tridiumx.mqttClientDriver.point.BMqttClientDriverPointDeviceExt;
 import com.tridiumx.mqttClientDriver.point.BMqttClientDriverPointFolder;
 import com.tridiumx.mqttClientDriver.proxyExt.publishers.BMqttStringObjectPublishExt;
 import com.tridiumx.mqttClientDriver.proxyExt.subscribers.BMqttStringObjectSubscribeExt;
@@ -77,7 +76,11 @@ public class BBacnetToMqttJob
             mqttExt.setTopic("devices/"+_mqttDevice.getClientID()+"/messages/devicebound/#");
             BStringPoint mqttPoint = new BStringPoint();
             mqttPoint.setProxyExt(mqttExt);
-            _mqttDevice.getPoints().add("Cloud2Device", mqttPoint);
+            try {
+              _mqttDevice.getPoints().add("Cloud2Device", mqttPoint);
+            } catch (DuplicateSlotException e) {
+              System.out.println("Adding MQTT Subscribe Point failed. Slot \"Cloud2Device\" already exists, that's OK. Existing point is not overwritten.");
+            }
         }
     }
 
